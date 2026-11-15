@@ -1,5 +1,6 @@
 :root {
     --bg: #0d0f14;
+    --bg-gradient: radial-gradient(circle at 20% 0%, #1a1533 0%, #0d0f14 55%);
     --card: #171a23;
     --card-2: #1f2330;
     --border: #2a2f3e;
@@ -11,13 +12,31 @@
     --high: #ef4444;
     --medium: #f59e0b;
     --low: #22c55e;
+    --scheme: dark;
+}
+
+[data-theme="light"] {
+    --bg: #f4f6fb;
+    --bg-gradient: radial-gradient(circle at 20% 0%, #e5e0ff 0%, #f4f6fb 60%);
+    --card: #ffffff;
+    --card-2: #f0f3f9;
+    --border: #d8deea;
+    --text: #181b24;
+    --muted: #5c6478;
+    --accent: #7c3aed;
+    --accent-2: #0284c7;
+    --danger: #dc2626;
+    --high: #dc2626;
+    --medium: #d97706;
+    --low: #16a34a;
+    --scheme: light;
 }
 
 * { box-sizing: border-box; }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: radial-gradient(circle at 20% 0%, #1a1533 0%, var(--bg) 55%);
+    background: var(--bg-gradient);
     color: var(--text);
     min-height: 100vh;
     margin: 0;
@@ -25,6 +44,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    transition: background 0.25s ease, color 0.25s ease;
 }
 
 .todo-card {
@@ -32,15 +52,22 @@ body {
     padding: 28px;
     border-radius: 18px;
     border: 1px solid var(--border);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     width: 100%;
-    max-width: 480px;
+    max-width: 500px;
+}
+
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
 }
 
 h1 {
     margin: 0 0 4px;
-    text-align: center;
-    font-size: 1.7rem;
+    text-align: left;
+    font-size: 1.65rem;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     -webkit-background-clip: text;
     background-clip: text;
@@ -48,10 +75,18 @@ h1 {
 }
 
 .subtitle {
-    text-align: center;
+    text-align: left;
     color: var(--muted);
     font-size: 0.85rem;
-    margin: 0 0 20px;
+    margin: 0;
+}
+
+.header-controls {
+    display: flex;
+    gap: 4px;
+}
+.theme-btn {
+    font-size: 1.05rem;
 }
 
 /* Progress */
@@ -85,10 +120,11 @@ h1 {
 }
 .options-row {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 18px;
 }
-.options-row > * { flex: 1; min-width: 0; }
+.options-row > * { flex: 1 1 95px; min-width: 0; }
 
 input[type="text"],
 input[type="date"],
@@ -102,7 +138,7 @@ select {
     color: var(--text);
     font-size: 14px;
     font-family: inherit;
-    color-scheme: dark;
+    color-scheme: var(--scheme);
 }
 input:focus, select:focus {
     border-color: var(--accent);
@@ -131,21 +167,69 @@ button:active { transform: scale(0.97); }
     margin-bottom: 14px;
     flex-wrap: wrap;
 }
-.search {
+.search-sort-row {
+    display: flex;
+    gap: 6px;
     flex: 1 1 100%;
 }
-.filters { display: flex; gap: 6px; flex: 1; }
+.search {
+    flex: 1;
+    min-width: 0;
+}
+.sort-select {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+}
+.batch-toggle-btn.active-toggle {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.filters { display: flex; gap: 6px; flex: 1 1 100%; flex-wrap: wrap; }
 .filter-btn {
     flex: 1;
     padding: 7px 10px;
     background: var(--card-2);
     color: var(--muted);
     border: 1px solid var(--border);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
 }
 .filter-btn.active {
     background: var(--accent);
     border-color: var(--accent);
+    color: #fff;
+}
+.category-filters .filter-btn.active {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    color: #fff;
+}
+
+/* Batch Bar */
+.batch-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+.batch-actions {
+    display: flex;
+    gap: 6px;
+}
+.danger-outline {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.danger-outline:hover {
+    background: var(--danger);
     color: #fff;
 }
 
@@ -154,9 +238,10 @@ ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    max-height: 340px;
+    max-height: 360px;
     overflow-y: auto;
     padding-right: 2px;
+    outline: none;
 }
 ul::-webkit-scrollbar { width: 6px; }
 ul::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
@@ -167,27 +252,41 @@ li {
     margin-bottom: 8px;
     border-radius: 10px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     font-size: 14px;
     border-left: 4px solid var(--medium);
     animation: pop 0.2s ease;
     cursor: grab;
+    touch-action: pan-y;
+    /* Task completion morph: springy easing for the scale and fade */
+    transition:
+        transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        opacity 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background-color 0.3s ease;
 }
 li.priority-high { border-left-color: var(--high); }
 li.priority-medium { border-left-color: var(--medium); }
 li.priority-low { border-left-color: var(--low); }
-li.dragging { opacity: 0.4; }
+li.dragging { opacity: 0.45; transform: scale(0.99); }
 li.drag-over { outline: 2px dashed var(--accent); }
+li.batch-selected { background: rgba(139, 92, 246, 0.16); }
 
-@keyframes pop {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+/* A completed task shrinks slightly and fades back */
+li.done {
+    transform: scale(0.985);
+    opacity: 0.65;
 }
 
-li input[type="checkbox"] {
+/* No "to" frame: the entrance animation ends on the element's own state (so done items stay faded) */
+@keyframes pop {
+    from { opacity: 0; transform: translateY(6px); }
+}
+
+li > input[type="checkbox"] {
     width: 18px;
     height: 18px;
+    margin-top: 2px;
     accent-color: var(--accent);
     cursor: pointer;
     flex-shrink: 0;
@@ -197,23 +296,122 @@ li input[type="checkbox"] {
 .task-text {
     display: block;
     word-break: break-word;
+    font-weight: 500;
+    /* The line is always there but transparent, so its colour can fade in smoothly */
+    text-decoration-line: line-through;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: transparent;
+    transition: color 0.45s ease, text-decoration-color 0.45s ease;
 }
 li.done .task-text {
+    color: var(--muted);
+    text-decoration-color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    li, .task-text { transition: none; animation: none; }
+}
+
+/* Subtasks Display & Editor */
+.subtask-list {
+    margin-top: 6px;
+    padding-left: 8px;
+    border-left: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text);
+    cursor: pointer;
+}
+.subtask-item input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--accent-2);
+    cursor: pointer;
+}
+.subtask-item.sub-done span {
     text-decoration: line-through;
     color: var(--muted);
 }
+
+.subtask-editor {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.sub-editor-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+.sub-editor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.sub-editor-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.sub-editor-row input[type="text"] {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 13px;
+}
+.sub-add-row {
+    display: flex;
+    gap: 6px;
+}
+.sub-add-row input {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 13px;
+}
+
+.meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+}
+.task-category {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: rgba(6, 182, 212, 0.14);
+    border: 1px solid rgba(6, 182, 212, 0.35);
+    color: var(--accent-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+.subtask-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: rgba(139, 92, 246, 0.14);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
 .task-meta {
-    display: block;
+    display: inline-block;
     font-size: 0.74rem;
     color: var(--muted);
-    margin-top: 2px;
 }
 .task-meta.overdue { color: var(--danger); font-weight: 600; }
-
-.edit-input {
-    width: 100%;
-    padding: 6px 8px;
-}
 
 .icon-btn {
     padding: 5px 8px;
@@ -226,9 +424,13 @@ li.done .task-text {
 .delete-btn:hover { color: #fff; background: var(--danger); }
 
 .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     color: var(--muted);
-    padding: 26px 0;
+    padding: 28px 12px;
     font-size: 0.9rem;
     cursor: default;
     background: transparent;
@@ -254,6 +456,28 @@ li.done .task-text {
 }
 .clear-btn:hover { border-color: var(--danger); color: var(--danger); }
 
+.backup-actions {
+    display: flex;
+    gap: 8px;
+}
+.backup-actions > * {
+    flex: 1;
+    text-align: center;
+}
+.import-label {
+    cursor: pointer;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: border-color 0.2s, color 0.2s;
+}
+.import-label:hover {
+    border-color: var(--accent-2);
+    color: var(--accent-2);
+}
+
 .notify-bar {
     display: flex;
     justify-content: space-between;
@@ -275,6 +499,26 @@ li.done .task-text {
 .notify-bar .clear-btn:hover { background: var(--accent); color: #fff; }
 
 .notify-actions { display: flex; gap: 6px; }
+
+/* Password Strength Meter */
+.pw-strength {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+}
+.pw-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--card-2);
+    border-radius: 99px;
+    overflow: hidden;
+}
+.pw-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.25s ease, background 0.25s ease;
+}
 
 .alarm-overlay {
     position: fixed;
@@ -349,18 +593,27 @@ li.done .task-text {
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     background: var(--card);
     border: 1px solid var(--accent);
     border-left: 4px solid var(--accent-2);
     border-radius: 10px;
     padding: 12px 36px 12px 14px;
     min-width: 240px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     animation: pop 0.25s ease;
 }
 .toast strong { color: var(--accent-2); font-size: 0.85rem; }
 .toast span { font-size: 0.9rem; word-break: break-word; }
+.toast-undo-btn {
+    align-self: flex-start;
+    margin-top: 4px;
+    padding: 4px 10px;
+    font-size: 0.76rem;
+    background: var(--card-2);
+    color: var(--accent-2);
+    border: 1px solid var(--accent-2);
+}
 .toast-close {
     position: absolute;
     top: 6px;
@@ -423,7 +676,7 @@ body { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24p
     justify-content: center;
     align-items: center;
     padding: 16px;
-    background: radial-gradient(circle at 20% 0%, #1a1533 0%, var(--bg) 60%);
+    background: var(--bg-gradient);
 }
 .lock-box {
     width: 100%;
@@ -433,7 +686,7 @@ body { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24p
     border-radius: 18px;
     padding: 28px 24px;
     text-align: center;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -525,7 +778,62 @@ body { padding-top: max(24px, env(safe-area-inset-top)); padding-bottom: max(24p
 
 .hint {
     text-align: center;
-    color: #5d6478;
+    color: var(--muted);
     font-size: 0.72rem;
     margin: 14px 0 0;
 }
+
+/* Phone alerts (alerts that work when the app is closed) */
+.phone-alerts {
+    margin: 0 0 16px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px 12px;
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+.phone-alerts summary { cursor: pointer; padding: 8px 0; }
+.phone-alerts .security-body { padding-bottom: 10px; }
+.pa-help { margin: 0; font-size: 0.76rem; line-height: 1.45; color: var(--muted); }
+.pa-step { font-size: 0.8rem; line-height: 1.45; color: var(--text); }
+.pa-msg { min-height: 1.1em; }
+.topic-row { display: flex; gap: 8px; }
+.topic-row input { flex: 1; min-width: 0; font-family: monospace; font-size: 13px; }
+a.clear-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 9px 12px;
+}
+.check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    color: var(--text);
+}
+
+/* Keep the search / sort / select row inside the card on narrow phones */
+.search-sort-row > * { min-width: 0; }
+.sort-select { flex: 0 1 36%; }
+.batch-toggle-btn { flex-shrink: 0; }
+.search-sort-row { min-width: 0; max-width: 100%; }
+.search-sort-row .search { flex: 1 1 0; width: 0; }
+.sort-select { width: 0; }
+.input-group { grid-template-columns: minmax(0, 1fr) auto; }
+.input-group input { min-width: 0; }
+.due-hint { margin: -8px 0 12px; }
+
+.section-title {
+    margin: 22px 0 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.header-controls .icon-btn { font-size: 1.05rem; }
