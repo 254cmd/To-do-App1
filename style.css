@@ -744,3 +744,7 @@ li > .icon-btn svg { display: block; }
     font: inherit; font-weight: 600; cursor: pointer;
 }
 .install-go[hidden] { display: none; }
+
+#installRow[hidden] { display: none; }
+.install-help { margin-top: 8px; font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+.install-help:empty { display: none; }
