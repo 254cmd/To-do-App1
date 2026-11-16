@@ -241,6 +241,17 @@
             </details>
         </div>
 
+        <div class="install-banner" id="installBanner" role="dialog" aria-label="Install app" hidden>
+            <div class="install-text">
+                <strong>Install To-Do</strong>
+                <span id="installMsg">Add it to your home screen to open it like a normal app.</span>
+            </div>
+            <div class="install-actions">
+                <button type="button" class="clear-btn" id="installLater">Not now</button>
+                <button type="button" class="install-go" id="installGo">Install</button>
+            </div>
+        </div>
+
         <div class="toast-container" id="toastContainer"></div>
 
         <div class="alarm-overlay" id="alarmOverlay" hidden>
@@ -2034,6 +2045,42 @@
             });
             document.addEventListener('visibilitychange', () => { if (!document.hidden) applyWakeLock(); });
             applyWakeLock();
+
+
+            // ---------- Install prompt ----------
+            (function setupInstall() {
+                const banner = $('installBanner'), go = $('installGo'), later = $('installLater'), msg = $('installMsg');
+                let deferred = null;
+                const standalone = () => window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+                const dismissed = () => { try { return localStorage.getItem('todo_install_dismissed') === '1'; } catch (e) { return false; } };
+                const remember = () => { try { localStorage.setItem('todo_install_dismissed', '1'); } catch (e) {} };
+                const hide = () => { banner.hidden = true; };
+                if (standalone()) return;
+
+                later.addEventListener('click', () => { remember(); hide(); });
+                go.addEventListener('click', async () => {
+                    if (!deferred) { hide(); return; }
+                    deferred.prompt();
+                    try { await deferred.userChoice; } catch (e) {}
+                    deferred = null; remember(); hide();
+                });
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferred = e;
+                    if (!dismissed()) { go.hidden = false; banner.hidden = false; }
+                });
+                window.addEventListener('appinstalled', () => { remember(); hide(); });
+
+                // iPhone/iPad Safari has no install prompt: show the manual steps once.
+                const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+                    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                if (ios && !dismissed()) {
+                    msg.textContent = 'Tap the Share button, then "Add to Home Screen".';
+                    go.hidden = true;
+                    later.textContent = 'Got it';
+                    banner.hidden = false;
+                }
+            })();
 
             // ---------- Startup ----------
             function init() {
