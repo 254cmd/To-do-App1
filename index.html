@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-        <meta name="theme-color" content="#0d0f14" id="themeColorMeta">
+        <meta name="theme-color" content="#0e1218" id="themeColorMeta">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,7 @@
         <!-- ================= Lock screen ================= -->
         <div class="lock-screen" id="lockScreen">
             <div class="lock-box">
-                <div class="lock-icon"></div>
+                <div class="lock-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></div>
                 <h2 id="lockTitle">Unlock</h2>
                 <p class="lock-sub" id="lockSub">Enter your password to open your tasks.</p>
                 <form id="lockForm" autocomplete="off">
@@ -43,8 +43,8 @@
                     <p class="subtitle" id="dateLabel"></p>
                 </div>
                 <div class="header-controls">
-                    <button type="button" class="icon-btn" id="lockNowBtn" title="Lock now" aria-label="Lock now">🔒</button>
-                    <button type="button" class="icon-btn theme-btn" id="themeToggleBtn" title="Switch Theme (System / Dark / Light)" aria-label="Switch Theme">🌓</button>
+                    <button type="button" class="icon-btn" id="lockNowBtn" title="Lock now" aria-label="Lock now"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg></button>
+                    <button type="button" class="icon-btn theme-btn" id="themeToggleBtn" title="Switch theme" aria-label="Switch theme"></button>
                 </div>
             </div>
 
@@ -56,34 +56,81 @@
                 <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             </div>
 
-            <form id="taskForm">
-                <div class="input-group">
-                    <input type="text" id="taskInput" placeholder="Add new task..." autocomplete="off">
-                    <button type="submit">Add</button>
+            <form id="taskForm" autocomplete="off">
+                <div class="wiz-dots" id="wizDots" aria-hidden="true">
+                    <span class="wiz-dot active"></span><span class="wiz-dot"></span><span class="wiz-dot"></span><span class="wiz-dot"></span>
                 </div>
-                <input type="text" id="noteInput" class="note-input" placeholder="Notes (optional)" autocomplete="off">
-                <div class="options-row">
-                    <label class="field">Category
-                        <select id="categorySelect">
-                            <option value="Personal" selected>Personal</option>
-                            <option value="Work">Work</option>
-                        </select>
-                    </label>
-                    <label class="field">Priority
-                        <select id="prioritySelect">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </label>
-                    <label class="field">Due date
-                        <input type="date" id="dueInput">
-                    </label>
-                    <label class="field">Remind at
-                        <input type="time" id="timeInput" value="09:00">
-                    </label>
+                <div class="wiz-summary" id="wizSummary" hidden></div>
+
+                <!-- Step 1: task name -->
+                <div class="wiz-step" data-step="1">
+                    <label class="wiz-label" for="taskInput">1. What needs doing?</label>
+                    <div class="input-group">
+                        <input type="text" id="taskInput" placeholder="Add new task..." autocomplete="off">
+                        <button type="button" class="wiz-next">Next</button>
+                    </div>
                 </div>
-                <p class="pa-help due-hint" id="dueHint">Pick a due date to get a reminder. The time alone does not set an alarm.</p>
+
+                <!-- Step 2: date -->
+                <div class="wiz-step" data-step="2" hidden>
+                    <label class="wiz-label" for="dueInput">2. When is it due?</label>
+                    <input type="date" id="dueInput">
+                    <div class="chip-row">
+                        <button type="button" class="chip" data-days="0">Today</button>
+                        <button type="button" class="chip" data-days="1">Tomorrow</button>
+                        <button type="button" class="chip" data-days="3">In 3 days</button>
+                        <button type="button" class="chip" data-days="7">Next week</button>
+                    </div>
+                    <div class="wiz-actions">
+                        <button type="button" class="clear-btn wiz-back">Back</button>
+                        <button type="button" class="wiz-next">Next</button>
+                    </div>
+                    <button type="button" class="link-btn" id="skipDateBtn">No date (no reminder)</button>
+                </div>
+
+                <!-- Step 3: time -->
+                <div class="wiz-step" data-step="3" hidden>
+                    <label class="wiz-label" for="timeInput">3. What time should it remind you?</label>
+                    <input type="time" id="timeInput" value="09:00">
+                    <div class="chip-row">
+                        <button type="button" class="chip" data-time="09:00">Morning 9:00</button>
+                        <button type="button" class="chip" data-time="12:00">Noon 12:00</button>
+                        <button type="button" class="chip" data-time="15:00">Afternoon 3:00</button>
+                        <button type="button" class="chip" data-time="18:00">Evening 6:00</button>
+                    </div>
+                    <div class="wiz-actions">
+                        <button type="button" class="clear-btn wiz-back">Back</button>
+                        <button type="button" class="clear-btn" id="moreOptionsBtn">More options</button>
+                        <button type="submit">Add task</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: optional extras -->
+                <div class="wiz-step" data-step="4" hidden>
+                    <div class="wiz-label">4. Extras (all optional)</div>
+                    <input type="text" id="noteInput" class="note-input" placeholder="Notes (optional)" autocomplete="off">
+                    <div class="options-row">
+                        <label class="field">Category
+                            <select id="categorySelect">
+                                <option value="Personal" selected>Personal</option>
+                                <option value="Work">Work</option>
+                            </select>
+                        </label>
+                        <label class="field">Priority
+                            <select id="prioritySelect">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="wiz-actions">
+                        <button type="button" class="clear-btn wiz-back">Back</button>
+                        <button type="submit">Add task</button>
+                    </div>
+                </div>
+
+                <div class="lock-error wiz-msg" id="wizMsg" role="status"></div>
             </form>
 
             <div class="toolbar">
@@ -103,7 +150,7 @@
                     <button type="button" class="filter-btn" data-filter="completed">Done</button>
                 </div>
                 <div class="filters category-filters" id="categoryFilters">
-                    <button type="button" class="filter-btn active" data-cat="all">All Categories</button>
+                    <button type="button" class="filter-btn active" data-cat="all">All categories</button>
                     <button type="button" class="filter-btn" data-cat="Personal">Personal</button>
                     <button type="button" class="filter-btn" data-cat="Work">Work</button>
                 </div>
@@ -113,8 +160,8 @@
             <div class="batch-bar" id="batchBar" hidden>
                 <span id="batchCount">0 selected</span>
                 <div class="batch-actions">
-                    <button type="button" class="clear-btn" id="batchDoneBtn">Mark Done</button>
-                    <button type="button" class="clear-btn" id="batchCatBtn">Switch Cat</button>
+                    <button type="button" class="clear-btn" id="batchDoneBtn">Mark done</button>
+                    <button type="button" class="clear-btn" id="batchCatBtn">Change category</button>
                     <button type="button" class="clear-btn danger-outline" id="batchDelBtn">Delete</button>
                 </div>
             </div>
@@ -125,9 +172,9 @@
                 <span id="itemsLeft">0 items left</span>
                 <button type="button" class="clear-btn" id="clearCompleted">Clear completed</button>
             </div>
-            <p class="hint">Tap Edit to add subtasks or change details.</p>
+            <p class="hint">Tap the pencil to add subtasks or change details.</p>
 
-            <div class="section-title">Reminders &amp; alerts</div>
+            <div class="section-title">Reminders and alerts</div>
             <div class="notify-bar">
                 <span id="notifyStatus">Alarms are off</span>
                 <div class="notify-actions">
@@ -137,7 +184,7 @@
             </div>
 
             <details class="phone-alerts" id="phoneAlerts">
-                <summary id="phoneSummary">Phone alerts when the app is closed: Off</summary>
+                <summary id="phoneSummary">Closed-app alarms: off. Tap to set up</summary>
                 <div class="security-body">
                     <p class="pa-help">Browsers cannot wake a closed web app. Phone alerts queue your reminders on the free <b>ntfy</b> service, and the ntfy app on your phone rings at the right time even when this app is closed.</p>
                     <button type="button" id="ntfyEnableBtn">Turn on phone alerts</button>
@@ -161,22 +208,22 @@
                 </div>
             </details>
 
-            <div class="section-title">Security &amp; backup</div>
+            <div class="section-title">Settings</div>
             <details class="security">
-                <summary>Security, Appearance &amp; Backup</summary>
+                <summary>Appearance, security &amp; backup</summary>
                 <div class="security-body">
                     <label class="field">Theme
                         <select id="themeSelect">
-                            <option value="system">System Default</option>
-                            <option value="dark">Dark Mode</option>
-                            <option value="light">Light Mode</option>
+                            <option value="system">System default</option>
+                            <option value="dark">Dark</option>
+                            <option value="light">Light</option>
                         </select>
                     </label>
                     <button type="button" class="clear-btn" id="bioToggleBtn">Enable fingerprint unlock</button>
                     <div class="backup-actions">
-                        <button type="button" class="clear-btn" id="exportBtn">Export Backup</button>
+                        <button type="button" class="clear-btn" id="exportBtn">Export backup</button>
                         <label class="clear-btn import-label">
-                            Import Backup
+                            Import backup
                             <input type="file" id="importFile" accept=".json" hidden>
                         </label>
                     </div>
@@ -208,6 +255,7 @@
             const DEFAULT_TIME = '09:00';
             const GRACE_MS = 3 * 60 * 1000;   // an alarm only rings within 3 minutes of its set time
             let lastDay = new Date().toDateString();
+            let lastOverdueSig = '';
 
             // Storage keys
             const VAULT_KEY = 'todo_vault';        // password-wrapped data key (no tasks inside)
@@ -237,17 +285,23 @@
             const $ = (id) => document.getElementById(id);
 
             // ---------- Theme Management ----------
+            const THEME_ICONS = {
+                system: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"></rect><path d="M8 20h8M12 16v4"></path></svg>',
+                light: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>',
+                dark: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>'
+            };
+
             function applyTheme(pref) {
                 const resolved = pref === 'system'
                     ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
                     : pref;
                 document.documentElement.setAttribute('data-theme', resolved);
                 const meta = $('themeColorMeta');
-                if (meta) meta.setAttribute('content', resolved === 'light' ? '#f4f6fb' : '#0d0f14');
+                if (meta) meta.setAttribute('content', resolved === 'light' ? '#f3f4f7' : '#0e1218');
                 const btn = $('themeToggleBtn');
                 if (btn) {
-                    btn.textContent = pref === 'system' ? '🌓' : (pref === 'light' ? '☀️' : '🌙');
-                    btn.title = 'Theme: ' + pref.charAt(0).toUpperCase() + pref.slice(1);
+                    btn.innerHTML = THEME_ICONS[pref] || THEME_ICONS.system;
+                    btn.title = 'Theme: ' + pref;
                 }
                 const sel = $('themeSelect');
                 if (sel) sel.value = pref;
@@ -415,6 +469,11 @@
                 const [y, m, d] = due.split('-').map(Number);
                 const [hh, mm] = (time || DEFAULT_TIME).split(':').map(Number);
                 return new Date(y, m - 1, d - offsetDays, hh, mm);
+            }
+
+            // Overdue = not done, has a due date, and the due date + reminder time has passed
+            function isOverdue(t) {
+                return !t.done && !!t.due && reminderMoment(t.due, t.time, 0).getTime() <= Date.now();
             }
 
             function formatTime(time) {
@@ -712,7 +771,10 @@
                 if (changed) save();
 
                 const today = new Date().toDateString();
-                if ((changed || today !== lastDay) && editingId === null) render();
+                const sig = tasks.filter(isOverdue).map(t => t.id).join(',');
+                const overdueChanged = sig !== lastOverdueSig;
+                lastOverdueSig = sig;
+                if ((changed || overdueChanged || today !== lastDay) && editingId === null) render();
                 lastDay = today;
             }
 
@@ -769,7 +831,7 @@
                 $('noteInput').value = '';
                 $('dueInput').value = '';
                 $('timeInput').value = DEFAULT_TIME;
-                updateDueHint();
+                wizReset();
                 save();
                 checkReminders();
                 render();
@@ -972,6 +1034,7 @@
                 const li = document.createElement('li');
                 li.className = 'priority-' + task.priority +
                     (task.done ? ' done' : '') +
+                    (isOverdue(task) ? ' overdue' : '') +
                     (selectedIds.has(task.id) ? ' batch-selected' : '');
                 li.draggable = sortBy === 'manual' && !batchMode;
                 li.dataset.id = task.id;
@@ -1000,6 +1063,7 @@
                     cb.addEventListener('change', () => {
                         task.done = cb.checked;
                         li.classList.toggle('done', cb.checked);   // animate in place first
+                        if (cb.checked) li.classList.remove('overdue');
                         save();
                         setTimeout(render, 600);                    // then refresh counts and filters
                     });
@@ -1068,17 +1132,17 @@
                     const meta = document.createElement('span');
                     meta.className = 'task-meta';
                     const diff = daysUntil(task.due);
-                    const overdue = !task.done && diff < 0;
-                    const at = ' · remind ' + formatTime(task.time);
-                    let label = 'Due: ' + task.due + at;
+                    const overdue = isOverdue(task);
+                    const when = formatTime(task.time);
+                    let label = 'Due ' + prettyDate(task.due) + ', ' + when;
                     if (overdue) {
-                        label = 'Overdue: ' + task.due;
+                        label = 'Overdue since ' + prettyDate(task.due) + ', ' + when;
                         meta.classList.add('overdue');
                     } else if (!task.done && diff === 0) {
-                        label = 'Due today' + at;
+                        label = 'Due today, ' + when;
                         meta.classList.add('due-soon');
                     } else if (!task.done && diff === 1) {
-                        label = 'Due tomorrow' + at;
+                        label = 'Due tomorrow, ' + when;
                         meta.classList.add('due-soon');
                     }
                     meta.textContent = label;
@@ -1092,22 +1156,24 @@
                 const editBtn = document.createElement('button');
                 editBtn.type = 'button';
                 editBtn.className = 'icon-btn';
-                editBtn.title = 'Edit';
-                editBtn.textContent = 'Edit';
+                editBtn.title = 'Edit task';
+                editBtn.setAttribute('aria-label', 'Edit task');
+                editBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path></svg>';
                 editBtn.addEventListener('click', () => { editingId = task.id; render(); });
 
                 const del = document.createElement('button');
                 del.type = 'button';
                 del.className = 'icon-btn delete-btn';
-                del.title = 'Delete';
-                del.textContent = 'Delete';
+                del.title = 'Delete task';
+                del.setAttribute('aria-label', 'Delete task');
+                del.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M8 6V4h8v2"></path><path d="M19 6l-1 14H6L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>';
                 del.addEventListener('click', () => {
                     const idx = tasks.findIndex(t => t.id === task.id);
                     const deletedCopy = { ...task };
                     tasks = tasks.filter(t => t.id !== task.id);
                     save();
                     render();
-                    showToast('Task Deleted', '"' + deletedCopy.text + '" removed.', () => {
+                    showToast('Task deleted', '"' + deletedCopy.text + '" removed.', () => {
                         tasks.splice(idx >= 0 ? idx : 0, 0, deletedCopy);
                         save();
                         render();
@@ -1227,7 +1293,7 @@
                             <path d="M9 11l3 3L22 4"></path>
                             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                         </svg>
-                        <div>${tasks.length === 0 ? 'No tasks yet. Add one above!' : 'No tasks match your current filters.'}</div>
+                        <div>${tasks.length === 0 ? 'No tasks yet. Add one above.' : 'No tasks match your current filters.'}</div>
                     `;
                     list.appendChild(empty);
                 } else {
@@ -1299,7 +1365,8 @@
             // ---------- Form, Search, Filters & Sort ----------
             $('taskForm').addEventListener('submit', (e) => {
                 e.preventDefault();
-                addTask();
+                if (wizStep <= 2) wizNext();   // Enter moves to the next step; the last steps add the task
+                else addTask();
             });
 
             $('searchInput').addEventListener('input', (e) => {
@@ -1794,7 +1861,7 @@
             function updatePhoneUI() {
                 const cfg = ntfyCfg();
                 const on = !!(cfg && cfg.enabled);
-                $('phoneSummary').textContent = on ? 'Phone alerts when the app is closed: On' : 'Closed-app alarms are OFF. Tap to set up';
+                $('phoneSummary').textContent = on ? 'Closed-app alarms: on' : 'Closed-app alarms: off. Tap to set up';
                 $('ntfyEnableBtn').textContent = on ? 'Turn off phone alerts' : 'Turn on phone alerts';
                 $('ntfySetup').hidden = !on;
                 $('ntfyTopic').value = on ? cfg.topic : '';
@@ -1852,10 +1919,95 @@
                     : 'Queued. Close this app and wait about a minute for the alert.';
             });
 
-            function updateDueHint() { $('dueHint').hidden = !!$('dueInput').value; }
-            $('dueInput').addEventListener('input', updateDueHint);
-            $('dueInput').addEventListener('change', updateDueHint);
-            updateDueHint();
+            // ---------- Add-task steps: name -> date -> time -> optional extras ----------
+            let wizStep = 1;
+            let wizHistory = [];
+            const wizSteps = [...document.querySelectorAll('#taskForm .wiz-step')];
+            const wizDots = [...document.querySelectorAll('#wizDots .wiz-dot')];
+
+            function localDateStr(d) {
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            }
+            function prettyDate(s) {
+                const [y, m, d] = s.split('-').map(Number);
+                return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+            }
+            function wizMsg(text) { $('wizMsg').textContent = text || ''; }
+
+            function wizUpdateSummary() {
+                const box = $('wizSummary');
+                if (wizStep === 1) { box.hidden = true; return; }
+                const d = $('dueInput').value;
+                let s = '\u201c' + input.value.trim() + '\u201d';
+                if (d) {
+                    s += ', ' + prettyDate(d);
+                    if (wizStep >= 4) s += ', ' + formatTime($('timeInput').value || DEFAULT_TIME);
+                } else if (wizStep >= 4) {
+                    s += ', no date so no reminder';
+                }
+                box.textContent = s;
+                box.hidden = false;
+            }
+
+            function wizHighlightChips() {
+                const t = $('timeInput').value;
+                document.querySelectorAll('#taskForm [data-time]').forEach(b => b.classList.toggle('active', b.dataset.time === t));
+            }
+
+            function wizCheckTime() {
+                wizHighlightChips();
+                const d = $('dueInput').value;
+                if (wizStep !== 3 || !d) return;
+                const when = reminderMoment(d, $('timeInput').value || DEFAULT_TIME, 0).getTime();
+                wizMsg(when <= Date.now() - 60000 ? 'That time has already passed, so no alarm will ring. Pick a later time or date.' : '');
+            }
+
+            function wizShow(n) {
+                wizStep = n;
+                wizMsg('');
+                wizSteps.forEach(s => { s.hidden = Number(s.dataset.step) !== n; });
+                wizDots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i + 1 === n);
+                    dot.classList.toggle('done', i + 1 < n);
+                });
+                wizUpdateSummary();
+                if (n === 3) wizCheckTime();
+                const target = { 1: input, 2: $('dueInput'), 3: $('timeInput'), 4: $('noteInput') }[n];
+                try { target.focus(); } catch (e) {}
+            }
+            function wizGo(n) { wizHistory.push(wizStep); wizShow(n); }
+            function wizBack() { wizShow(wizHistory.pop() || 1); }
+            function wizReset() { wizHistory = []; wizShow(1); }
+
+            function wizNext() {
+                if (wizStep === 1) {
+                    if (!input.value.trim()) { wizMsg('Type what you need to do first.'); input.focus(); return; }
+                    wizGo(2);
+                } else if (wizStep === 2) {
+                    if (!$('dueInput').value) { wizMsg('Pick a date, or tap "No date".'); return; }
+                    wizGo(3);
+                } else if (wizStep === 3) {
+                    wizGo(4);
+                }
+            }
+
+            document.querySelectorAll('#taskForm .wiz-next').forEach(b => b.addEventListener('click', wizNext));
+            document.querySelectorAll('#taskForm .wiz-back').forEach(b => b.addEventListener('click', wizBack));
+            $('skipDateBtn').addEventListener('click', () => { $('dueInput').value = ''; wizGo(4); });
+            $('moreOptionsBtn').addEventListener('click', () => wizGo(4));
+            document.querySelectorAll('#taskForm [data-days]').forEach(b => b.addEventListener('click', () => {
+                const d = new Date();
+                d.setDate(d.getDate() + Number(b.dataset.days));
+                $('dueInput').value = localDateStr(d);
+                wizGo(3);
+            }));
+            document.querySelectorAll('#taskForm [data-time]').forEach(b => b.addEventListener('click', () => {
+                $('timeInput').value = b.dataset.time;
+                wizCheckTime();
+            }));
+            $('timeInput').addEventListener('input', wizCheckTime);
+            $('timeInput').addEventListener('change', wizCheckTime);
+            wizShow(1);
 
             // ---------- Keep screen on (lets in-app alarms ring while the app is open) ----------
             const WAKE_KEY = 'todo_wakelock';
